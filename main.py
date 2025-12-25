@@ -1,12 +1,7 @@
 import os
 import requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    CallbackQueryHandler,
-    ContextTypes,
-)
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
@@ -21,9 +16,9 @@ BLOCKED_COUNTRIES = {
 
 def get_country():
     try:
-        r = requests.get("https://ipapi.co/country/", timeout=5)
+        r = requests.get("https://ipapi.co/country/")
         return r.text.strip()
-    except Exception:
+    except:
         return "UNKNOWN"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -34,7 +29,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "⚠️ No financial advice\n"
         "⚠️ No guarantees\n"
         "⚠️ Trading involves risk",
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 async def handle_continue(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -51,7 +46,7 @@ async def handle_continue(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     keyboard = [
         [InlineKeyboardButton("I understand", callback_data="accept")],
-        [InlineKeyboardButton("Exit", callback_data="exit")],
+        [InlineKeyboardButton("Exit", callback_data="exit")]
     ]
 
     await query.edit_message_text(
@@ -60,7 +55,7 @@ async def handle_continue(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• No signals\n"
         "• No investment advice\n\n"
         "Do you accept the risks?",
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 async def handle_accept(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -74,7 +69,7 @@ async def handle_accept(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         "✅ You may continue.\n\nAll decisions are your responsibility.",
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 async def handle_exit(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -89,11 +84,11 @@ def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(handle_continue, pattern="^continue$"))
-    app.add_handler(CallbackQueryHandler(handle_accept, pattern="^accept$"))
-    app.add_handler(CallbackQueryHandler(handle_exit, pattern="^exit$"))
+    app.add_handler(CallbackQueryHandler(handle_continue, pattern="continue"))
+    app.add_handler(CallbackQueryHandler(handle_accept, pattern="accept"))
+    app.add_handler(CallbackQueryHandler(handle_exit, pattern="exit"))
 
-    print("🤖 Bot is running...")
+    print("Bot started")
     app.run_polling()
 
 if __name__ == "__main__":
